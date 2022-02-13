@@ -2,18 +2,20 @@ from os import path
 from git import Repo, remote
 import globals
 from gitVenvSync import projectLogger
+from git.exc import GitCommandError
+
 
 def getExistingRepository(repo_dir: path, repo_name: str) -> Repo:
     git_dir = path.join(repo_dir, ".git")
     if path.isdir(git_dir):
         repo = Repo(repo_dir)
-        projectLogger.log(projectLogger.prefix.INFO, [f"Exisitng repository {repo_name} found."])
+        projectLogger.log(projectLogger.prefix.INFO, [f"Existing repository {repo_name} found."])
     else:
         repo = Repo.init(repo_dir)
         remote = repo.create_remote("origin", getGitHttpsUrl(repo_name))
         remote.fetch()
-        repo.create_head('main', remote.refs.main)  # create local branch "master" from remote "master"
-        repo.heads.main.set_tracking_branch(remote.refs.main)  # set local "master" to track remote "master
+        repo.create_head('main', remote.refs.main)
+        repo.heads.main.set_tracking_branch(remote.refs.main)
         repo.heads.main.checkout() 
         projectLogger.log(projectLogger.prefix.INFO, [f"Repository {repo_name} created and connected."])
 
@@ -21,12 +23,15 @@ def getExistingRepository(repo_dir: path, repo_name: str) -> Repo:
 
 def updateRepository(repo: Repo) -> remote.FetchInfo:
     origin = repo.remote(name="origin")
-    fetch_info = origin.pull()
-    projectLogger.log(projectLogger.prefix.INFO, [fetch_info])
+    try:
+        fetch_info = origin.pull()
+    except GitCommandError as error:
+        raise Exception(f"An issue has occurred with the pull request for {'/'.join(next(repo.remote(name='origin').urls).split('/')[-2:])}. Please resolve this before continuing.") from error
+    
     return fetch_info[0]
 
 def wasRepoUpdated(fetch_info: remote.FetchInfo) -> bool:
-    projectLogger.log(projectLogger.prefix.INFO, [fetch_info.flags])
+    projectLogger.log(projectLogger.prefix.INFO, [f"Flag: {fetch_info.flags}"])
     if fetch_info.flags == 4:
         return False
      

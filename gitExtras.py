@@ -21,7 +21,7 @@ def getExistingRepository(repo_dir: path, repo_name: str) -> Repo:
 
 def updateRepository(repo: Repo) -> remote.FetchInfo:
     origin = repo.remote(name="origin")
-    fetch_info = origin.fetch()
+    fetch_info = origin.pull()
     projectLogger.log(projectLogger.prefix.INFO, [fetch_info])
     return fetch_info[0]
 

@@ -21,14 +21,17 @@ def getExistingRepository(repo_dir: path, repo_name: str) -> Repo:
 
     return repo
 
+
 def updateRepository(repo: Repo) -> remote.FetchInfo:
     origin = repo.remote(name="origin")
     try:
         fetch_info = origin.pull()
     except GitCommandError as error:
-        raise Exception(f"An issue has occurred with the pull request for {'/'.join(next(repo.remote(name='origin').urls).split('/')[-2:])}. Please resolve this before continuing.") from error
+        message = f"An issue has occurred with the pull request for {'/'.join(next(repo.remote(name='origin').urls).split('/')[-2:])}. Please resolve this before continuing."
+        raise Exception(message) from error
     
     return fetch_info[0]
+
 
 def wasRepoUpdated(fetch_info: remote.FetchInfo) -> bool:
     projectLogger.log(projectLogger.prefix.INFO, [f"Flag: {fetch_info.flags}"])
@@ -36,6 +39,7 @@ def wasRepoUpdated(fetch_info: remote.FetchInfo) -> bool:
         return False
      
     return True
+
 
 def addToFile(filename: path, input: list) -> list:
     with open(filename, "r") as file:
@@ -51,6 +55,7 @@ def addToFile(filename: path, input: list) -> list:
             file.writelines(cleaned_input)
         
     return cleaned_input
+
 
 def getGitHttpsUrl(repo_name: str) -> str:
     auth = "user:token"

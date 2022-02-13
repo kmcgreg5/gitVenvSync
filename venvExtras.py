@@ -3,6 +3,7 @@ from venv import EnvBuilder
 from sys import base_prefix, prefix
 from gitVenvSync import projectLogger
 
+
 class VenvException(Exception):
     def __init__(self, message = "A virtual environment should be used to run this program."):
         super().__init__(message)
@@ -12,10 +13,12 @@ class VenvException(Exception):
         if (base_prefix == prefix):
             raise VenvException()
 
+
 def createVirtualEnvironment(repo_dir: path):
     penv = path.join(repo_dir, "penv")
     if path.isdir(penv) is False:
         EnvBuilder(with_pip=True).create(penv)
+
 
 def updateVirtualEnvironment(repo_dir: path):
     pipreqs = path.join(repo_dir, "penv/bin/pipreqs")

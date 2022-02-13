@@ -17,8 +17,6 @@ class projectLogger:
             print(f"[{used_prefix.value}] {line}")
 
     
-
-
 def main():
     # Ensure command line argument complience
     if len(argv) != 2:

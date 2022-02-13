@@ -21,9 +21,12 @@ def getExistingRepository(repo_dir: path, repo_name: str) -> Repo:
 
 def updateRepository(repo: Repo) -> remote.FetchInfo:
     origin = repo.remote(name="origin")
-    return origin.pull()[0]
+    fetch_info = origin.fetch()
+    projectLogger.log(projectLogger.prefix.INFO, [fetch_info])
+    return fetch_info[0]
 
 def wasRepoUpdated(fetch_info: remote.FetchInfo) -> bool:
+    projectLogger.log(projectLogger.prefix.INFO, [fetch_info.flags])
     if fetch_info.flags == 4:
         return False
      

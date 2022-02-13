@@ -1,5 +1,5 @@
 from os import getcwd, path, execv
-from sys import argv, executable
+from sys import argv, executable, exit
 from enum import Enum
 import venvExtras
 
@@ -43,7 +43,12 @@ def main():
 
     if gitExtras.wasRepoUpdated(fetch_info):
         projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Repo updated, restarting...\n"])
+        exit()
         execv(executable, ["python"] + argv)
+
+    exit()
+
+    projectLogger.log(projectLogger.prefix.INFO, ["Before"])
 
     # Instantiate repository
     repo_dir = path.join(getcwd(), "code")

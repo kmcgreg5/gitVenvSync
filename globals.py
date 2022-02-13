@@ -1,2 +1,2 @@
-import os
-TOKENFILE = os.path.join(os.getcwd(), "github.token")
+from os import path, getcwd
+TOKENFILE = path.join(getcwd(), "github.token")

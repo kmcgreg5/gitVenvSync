@@ -1,14 +1,14 @@
-import os
-import git
+from os import path
+from git import Repo, remote
 import globals
 
-def getExistingRepository(repo_dir: os.path, repo_name: str) -> git.Repo:
-    git_dir = os.path.join(repo_dir, ".git")
-    if os.path.isdir(git_dir):
-        repo = git.Repo(repo_dir)
+def getExistingRepository(repo_dir: path, repo_name: str) -> Repo:
+    git_dir = path.join(repo_dir, ".git")
+    if path.isdir(git_dir):
+        repo = Repo(repo_dir)
         print("Exisitng repository found.")
     else:
-        repo = git.Repo.init(repo_dir)
+        repo = Repo.init(repo_dir)
         remote = repo.create_remote("origin", getGitHttpsUrl(repo_name))
         remote.fetch()
         repo.create_head('main', remote.refs.main)  # create local branch "master" from remote "master"
@@ -18,11 +18,11 @@ def getExistingRepository(repo_dir: os.path, repo_name: str) -> git.Repo:
 
     return repo
 
-def updateRepository(repo: git.Repo) -> list:
+def updateRepository(repo: Repo) -> remote.FetchInfo:
     origin = repo.remote(name="origin")
     return origin.pull()[0]
 
-def wasRepoUpdated(fetch_info: git.remote.FetchInfo) -> bool:
+def wasRepoUpdated(fetch_info: remote.FetchInfo) -> bool:
     if fetch_info.flags == 4:
         return False
      

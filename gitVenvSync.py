@@ -44,10 +44,6 @@ def main():
     if gitExtras.wasRepoUpdated(fetch_info):
         projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Repo updated, restarting...\n"])
         execv(executable, ["python"] + argv)
-    print("\After\n")
-    exit()
-
-    projectLogger.log(projectLogger.prefix.INFO, ["Before"])
 
     # Instantiate repository
     repo_dir = path.join(getcwd(), "code")

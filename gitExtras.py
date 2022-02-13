@@ -26,7 +26,7 @@ def updateRepository(repo: Repo) -> remote.FetchInfo:
     return fetch_info[0]
 
 def wasRepoUpdated(fetch_info: remote.FetchInfo) -> bool:
-    projectLogger.log(projectLogger.prefix.INFO, [fetch_info.flags])
+    projectLogger.log(projectLogger.prefix.INFO, [fetch_info.flags, "TESTING"])
     if fetch_info.flags == 4:
         return False
      

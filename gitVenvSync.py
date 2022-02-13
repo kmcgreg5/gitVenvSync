@@ -45,6 +45,7 @@ def main():
         projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Repo updated, restarting...\n"])
         execv(executable, ["python"] + argv)
 
+    print("test")
     # Instantiate repository
     repo_dir = path.join(getcwd(), "code")
     repo = gitExtras.getExistingRepository(repo_dir, argv[1])

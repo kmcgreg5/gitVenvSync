@@ -44,7 +44,7 @@ def main():
     if gitExtras.wasRepoUpdated(fetch_info):
         projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Repo updated, restarting...\n"])
         execv(executable, ["python"] + argv)
-    print("\nBefore\n")
+    print("\After\n")
     exit()
 
     projectLogger.log(projectLogger.prefix.INFO, ["Before"])

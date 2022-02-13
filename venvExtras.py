@@ -1,6 +1,7 @@
 from os import path, system
 from venv import EnvBuilder
 from sys import base_prefix, prefix
+from gitVenvSync import projectLogger
 
 class VenvException(Exception):
     def __init__(self, message = "A virtual environment should be used to run this program."):
@@ -21,11 +22,14 @@ def updateVirtualEnvironment(repo_dir: path):
     pip = path.join(repo_dir, "penv/bin/pip")
 
     if path.isfile(pipreqs) is False:
+        projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Installing pipreqs."])
         system(f"{pip} install pipreqs")
         print()
 
+    projectLogger.log(projectLogger.prefix.MAINTANENCE, [f"Updating {repo_dir}/requirements.txt..."])
     system(f"{pipreqs} --ignore code,penv --force {repo_dir}")
     print()
 
+    projectLogger.log(projectLogger.prefix.MAINTANENCE, [f"Updating {repo_dir} virtual environment."])
     system(f"{pip} install -r requirements.txt")
     print()

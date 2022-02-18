@@ -30,7 +30,7 @@ def updateRepository(repo: Repo) -> remote.FetchInfo:
         message = f"An issue has occurred with the pull request for {'/'.join(next(repo.remote(name='origin').urls).split('/')[-2:])}. Please resolve this before continuing."
         raise Exception(message) from error
     
-    if len(fetch_info > 0):
+    if len(fetch_info) > 0:
         return fetch_info[0]
     else:
         return None

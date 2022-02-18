@@ -16,7 +16,7 @@ def getExistingRepository(repo_dir: path, repo_name: str) -> Repo:
         remote.fetch()
         repo.create_head('main', remote.refs.main)
         repo.heads.main.set_tracking_branch(remote.refs.main)
-        repo.heads.main.checkout() 
+        repo.heads.main.checkout(force=True) 
         projectLogger.log(projectLogger.prefix.INFO, [f"Repository {repo_name} created and connected."])
 
     return repo

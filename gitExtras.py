@@ -1,18 +1,17 @@
 from os import path
 from git import Repo, remote
-import globals
 from gitVenvSync import projectLogger
 from git.exc import GitCommandError
 
 
-def getExistingRepository(repo_dir: path, repo_name: str) -> Repo:
+def getExistingRepository(repo_dir: path, username: str, repo_name: str) -> Repo:
     git_dir = path.join(repo_dir, ".git")
     if path.isdir(git_dir):
         repo = Repo(repo_dir)
         projectLogger.log(projectLogger.prefix.INFO, [f"Existing repository {repo_name} found."])
     else:
         repo = Repo.init(repo_dir)
-        remote = repo.create_remote("origin", getGitHttpsUrl(repo_name))
+        remote = repo.create_remote("origin", getGitSSHUrl(username, repo_name))
         remote.fetch()
         repo.create_head('main', remote.refs.main)
         repo.heads.main.set_tracking_branch(remote.refs.main)
@@ -63,9 +62,5 @@ def addToFile(filename: path, input: list) -> list:
     return cleaned_input
 
 
-def getGitHttpsUrl(repo_name: str) -> str:
-    auth = "user:token"
-    with open(globals.TOKENFILE, "r") as token_file:
-        auth = token_file.read().strip()
-
-    return f"https://{auth}@github.com/{auth.split(':')[0]}/{repo_name}"
+def getGitSSHUrl(username: str, repo_name: str) -> str:
+    return f"git@github.com:{username}/{repo_name}.git"

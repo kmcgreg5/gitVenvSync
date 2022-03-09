@@ -19,8 +19,8 @@ class projectLogger:
     
 def main():
     # Ensure command line argument complience
-    if len(argv) != 2:
-        projectLogger.log(projectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py repo-name"])
+    if len(argv) != 3:
+        projectLogger.log(projectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py username repo-name"])
         return
 
     # Create or get and update the maintanence venv and throw an exception if a venv is not being used
@@ -31,7 +31,7 @@ def main():
     import gitExtras
 
     # Update the maintanence repo and restart if repo was updated
-    repo = gitExtras.getExistingRepository(getcwd(), argv[0].replace(".py", ""))
+    repo = gitExtras.getExistingRepository(getcwd(), argv[1], argv[0].replace(".py", ""))
     fetch_info = gitExtras.updateRepository(repo)
 
     gitignore = path.join(getcwd(), ".gitignore")
@@ -45,7 +45,7 @@ def main():
 
     # Instantiate repository
     repo_dir = path.join(getcwd(), "code")
-    repo = gitExtras.getExistingRepository(repo_dir, argv[1])
+    repo = gitExtras.getExistingRepository(repo_dir, argv[1], argv[2])
     gitExtras.updateRepository(repo)
 
     gitignore = path.join(repo_dir, ".gitignore")

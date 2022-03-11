@@ -8,7 +8,7 @@ def getExistingRepository(repo_dir: path, username: str, repo_name: str) -> Repo
     git_dir = path.join(repo_dir, ".git")
     if path.isdir(git_dir):
         repo = Repo(repo_dir)
-        projectLogger.log(projectLogger.prefix.INFO, [f"Existing repository {repo_name} found."])
+        projectLogger.log(projectLogger.prefix.INFO, [f"Existing repository {next(repo.remote(name='origin').urls).split(':')[-1].strip('.git')} found."])
     else:
         if (username is None or repo_name is None):
             raise ValueError("A username and repo name must be provided to instantiate repositories")
@@ -29,7 +29,7 @@ def updateRepository(repo: Repo) -> remote.FetchInfo:
     try:
         fetch_info = origin.pull()
     except GitCommandError as error:
-        message = f"An issue has occurred with the pull request for {'/'.join(next(repo.remote(name='origin').urls).split('/')[-2:])}. Please resolve this before continuing."
+        message = f"An issue has occurred with the pull request for {next(repo.remote(name='origin').urls).split(':')[-1].strip('.git')}. Please resolve this before continuing."
         raise Exception(message) from error
     
     if len(fetch_info) > 0:

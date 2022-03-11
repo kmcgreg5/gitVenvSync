@@ -20,15 +20,15 @@ class projectLogger:
 def main():
     # Ensure command line argument complience
     
-    if len(argv) not in [3, 4] or (len(argv) == 4 and argv[1] != '--force'):
-        projectLogger.log(projectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py --force username repo-name"])
+    if len(argv) > 4 or (len(argv) in [2, 4] and argv[1] != "--force") or (len(argv) == 3 and "--force" in argv):
+        projectLogger.log(projectLogger.prefix.ERROR, ["Usage for instantiation: python gitVenvSync.py (--force) username repo-name", "Usage for update: python gitVenvSync.py (--force)"])
         return
     
     enclosing_repo = argv[0].replace(".py", "")
-    username = argv[-2]
-    code_repo = argv[-1]
+    code_repo = argv[-1] if len(argv) >= 3 else None
+    username = argv[-2] if len(argv) >= 3 else None
 
-    force = len(argv) > 3
+    force = "--force" in argv
 
     # Create or get and update the maintanence venv and throw an exception if a venv is not being used
     venvExtras.createVirtualEnvironment(getcwd(), False)

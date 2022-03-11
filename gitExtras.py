@@ -10,6 +10,9 @@ def getExistingRepository(repo_dir: path, username: str, repo_name: str) -> Repo
         repo = Repo(repo_dir)
         projectLogger.log(projectLogger.prefix.INFO, [f"Existing repository {repo_name} found."])
     else:
+        if (username is None or repo_name is None):
+            raise ValueError("A username and repo name must be provided to instantiate repositories")
+            
         repo = Repo.init(repo_dir)
         remote = repo.create_remote("origin", getGitSSHUrl(username, repo_name))
         remote.fetch()

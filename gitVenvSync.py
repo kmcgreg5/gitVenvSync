@@ -19,23 +19,30 @@ class projectLogger:
     
 def main():
     # Ensure command line argument complience
-    if len(argv) != 3:
-        projectLogger.log(projectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py username repo-name"])
+    
+    if len(argv) not in [3, 4] or (len(argv) == 4 and argv[1] != '--force'):
+        projectLogger.log(projectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py --force username repo-name"])
         return
+    
+    enclosing_repo = argv[0].replace(".py", "")
+    username = argv[-2]
+    code_repo = argv[-1]
+
+    force = len(argv) > 3
 
     # Create or get and update the maintanence venv and throw an exception if a venv is not being used
-    venvExtras.createVirtualEnvironment(getcwd())
-    venvExtras.updateVirtualEnvironment(getcwd())
+    venvExtras.createVirtualEnvironment(getcwd(), False)
+    venvExtras.updateVirtualEnvironment(getcwd(), False)
     venvExtras.VenvException.notUsingVenv()
 
     import gitExtras
 
     # Update the maintanence repo and restart if repo was updated
-    repo = gitExtras.getExistingRepository(getcwd(), argv[1], argv[0].replace(".py", ""))
+    repo = gitExtras.getExistingRepository(getcwd(), username, enclosing_repo)
     fetch_info = gitExtras.updateRepository(repo)
 
     gitignore = path.join(getcwd(), ".gitignore")
-    return_list = gitExtras.addToFile(gitignore, ["*.token", "penv/", "code/"])
+    return_list = gitExtras.addToFile(gitignore, ["penv/", "code/"])
     if len(return_list) > 0:
         projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Added the following items to the .gitignore:", f"\t{return_list}"])
 
@@ -45,7 +52,7 @@ def main():
 
     # Instantiate repository
     repo_dir = path.join(getcwd(), "code")
-    repo = gitExtras.getExistingRepository(repo_dir, argv[1], argv[2])
+    repo = gitExtras.getExistingRepository(repo_dir, username, code_repo)
     gitExtras.updateRepository(repo)
 
     gitignore = path.join(repo_dir, ".gitignore")
@@ -55,8 +62,8 @@ def main():
         repo.index.add([".gitignore"])
 
     # Instantiate and update python venv
-    venvExtras.createVirtualEnvironment(repo_dir)
-    venvExtras.updateVirtualEnvironment(repo_dir)
+    venvExtras.createVirtualEnvironment(repo_dir, force)
+    venvExtras.updateVirtualEnvironment(repo_dir, force)
     
 
 if __name__ == "__main__":

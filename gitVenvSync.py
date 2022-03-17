@@ -20,8 +20,8 @@ class projectLogger:
 def main():
     # Ensure command line argument complience
     
-    if len(argv) > 4 or (len(argv) in [2, 4] and argv[1] != "--force") or (len(argv) == 3 and "--force" in argv):
-        projectLogger.log(projectLogger.prefix.ERROR, ["Usage for instantiation: python gitVenvSync.py (--force) username repo-name", "Usage for update: python gitVenvSync.py (--force)"])
+    if len(argv) > 4 or (len(argv) in [2, 4] and argv[1] not in ["--force", "--clean"]) or (len(argv) == 3 and ("--force" in argv or "--clean" in argv)):
+        projectLogger.log(projectLogger.prefix.ERROR, ["Usage for instantiation: python gitVenvSync.py (--force|--clean) username repo-name", "Usage for update: python gitVenvSync.py (--force|--clean)"])
         return
     
     enclosing_repo = argv[0].replace(".py", "")
@@ -29,9 +29,10 @@ def main():
     username = argv[-2] if len(argv) >= 3 else None
 
     force = "--force" in argv
+    clean = "--clean" in argv
 
     # Create or get and update the maintanence venv and throw an exception if a venv is not being used
-    venvExtras.createVirtualEnvironment(getcwd(), False)
+    venvExtras.createVirtualEnvironment(getcwd(), False, False)
     venvExtras.updateVirtualEnvironment(getcwd(), False)
     venvExtras.VenvException.notUsingVenv()
 
@@ -62,7 +63,7 @@ def main():
         repo.index.add([".gitignore"])
 
     # Instantiate and update python venv
-    venvExtras.createVirtualEnvironment(repo_dir, force)
+    venvExtras.createVirtualEnvironment(repo_dir, force, clean)
     venvExtras.updateVirtualEnvironment(repo_dir, force)
     
 

@@ -16,10 +16,10 @@ class VenvException(Exception):
             raise VenvException()
 
 
-def createVirtualEnvironment(repo_dir: path, force: bool):
+def createVirtualEnvironment(repo_dir: path, force: bool, clean: bool):
     penv = Path(repo_dir) / "penv"
 
-    if force is True and penv.is_dir():
+    if (force is True or clean is True) and penv.is_dir():
         projectLogger.log(projectLogger.prefix.INFO, [f"Removing {repo_dir} python environment."])
         for file in penv.rglob("*"):
             if file.is_file():

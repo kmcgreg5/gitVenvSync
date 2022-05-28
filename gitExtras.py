@@ -27,7 +27,9 @@ def getExistingRepository(repo_dir: path, username: str, repo_name: str) -> Repo
 def updateRepository(repo: Repo) -> remote.FetchInfo:
     origin = repo.remote(name="origin")
     try:
+        repo.git.reset('--hard')
         fetch_info = origin.pull()
+        
     except GitCommandError as error:
         message = f"An issue has occurred with the pull request for {next(repo.remote(name='origin').urls).split(':')[-1].strip('.git')}. Please resolve this before continuing."
         raise Exception(message) from error

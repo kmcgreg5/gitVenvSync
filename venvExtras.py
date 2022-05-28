@@ -48,7 +48,7 @@ def updateVirtualEnvironment(repo_dir: path, force: bool):
 
     
     projectLogger.log(projectLogger.prefix.MAINTANENCE, [f"Updating {repo_dir}/requirements.txt..."])
-    system(f"{pipreqs} --ignore code,penv,requirements.txt --force {repo_dir}")
+    system(f"{pipreqs} --ignore code,penv --force {repo_dir}")
     print()
     if force is False:
         with open(f"{repo_dir}/requirements.txt", 'r') as requirements:

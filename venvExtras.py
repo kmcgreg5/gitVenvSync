@@ -35,6 +35,9 @@ def updateVirtualEnvironment(repo_dir: path, force: bool):
     pipreqs = path.join(repo_dir, "penv/bin/pipreqs")
     pip = path.join(repo_dir, "penv/bin/pip")
 
+    projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Updating pip."])
+    system(f"{pip} install --upgrade --quiet pip")
+
     if path.isfile(pipreqs) is False:
         projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Installing pipreqs."])
         system(f"{pip} install pipreqs")

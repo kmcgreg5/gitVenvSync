@@ -40,7 +40,7 @@ def updateVirtualEnvironment(repo_dir: path, force: bool):
 
     if path.isfile(pipreqs) is False:
         projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Installing pipreqs."])
-        system(f"{pip} install pipreqs")
+        system(f"{pip} install --quiet pipreqs")
         print()
 
     with open(f"{repo_dir}/requirements.txt", 'r') as requirements:
@@ -48,7 +48,7 @@ def updateVirtualEnvironment(repo_dir: path, force: bool):
 
     
     projectLogger.log(projectLogger.prefix.MAINTANENCE, [f"Updating {repo_dir}/requirements.txt..."])
-    system(f"{pipreqs} --ignore code,penv --force {repo_dir}")
+    system(f"{pipreqs} --ignore code,penv --force --quiet {repo_dir}")
     print()
     if force is False:
         with open(f"{repo_dir}/requirements.txt", 'r') as requirements:

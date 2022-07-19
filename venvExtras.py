@@ -65,5 +65,5 @@ def updateVirtualEnvironment(repo_dir: path, force: bool):
 
 
     projectLogger.log(projectLogger.prefix.MAINTANENCE, [f"Updating {repo_dir} virtual environment."])
-    system(f"{pip} install -r {repo_dir}/requirements.txt")
+    system(f"{pip} install -q -r {repo_dir}/requirements.txt")
     print()

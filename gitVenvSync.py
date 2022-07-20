@@ -20,7 +20,7 @@ class projectLogger:
 def main():
     # Ensure command line argument complience
     
-    if len(argv) > 5 or len(argv) < 3 or (len(argv) == 4 and argv[1] not in ['--force', '--clean', '--reset']) or (len(argv) == 5 and (argv[1] not in ['--force', '--clean'] or argv[2] not in ['--reset'])):
+    if len(argv) > 5 or (len(argv) == 4 and argv[1] not in ['--force', '--clean', '--reset']) or (len(argv) == 5 and (argv[1] not in ['--force', '--clean'] or argv[2] not in ['--reset'])):
         projectLogger.log(projectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py (--force|--clean) (--reset) username repo-name"])
         return
     

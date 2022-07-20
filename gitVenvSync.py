@@ -20,8 +20,8 @@ class projectLogger:
 def main():
     # Ensure command line argument complience
     
-    if len(argv) > 4 or (len(argv) in [2, 4] and argv[1] not in ["--force", "--clean"]) or (len(argv) == 3 and ("--force" in argv or "--clean" in argv)):
-        projectLogger.log(projectLogger.prefix.ERROR, ["Usage for instantiation: python gitVenvSync.py (--force|--clean) username repo-name", "Usage for update: python gitVenvSync.py (--force|--clean)"])
+    if len(argv) > 5 or len(argv) < 3 or (len(argv) == 4 and argv[1] not in ['--force', '--clean', '--reset']) or (len(argv) == 5 and (argv[1] not in ['--force', '--clean'] or argv[2] not in ['--reset'])):
+        projectLogger.log(projectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py (--force|--clean) (--reset) username repo-name"])
         return
     
     enclosing_repo = argv[0].replace(".py", "")
@@ -30,6 +30,7 @@ def main():
 
     force = "--force" in argv
     clean = "--clean" in argv
+    reset = "--reset" in argv
 
     # Create or get and update the maintanence venv and throw an exception if a venv is not being used
     venvExtras.createVirtualEnvironment(getcwd(), False, False)
@@ -40,7 +41,7 @@ def main():
 
     # Update the maintanence repo and restart if repo was updated
     repo = gitExtras.getExistingRepository(getcwd(), username, enclosing_repo)
-    fetch_info = gitExtras.updateRepository(repo)
+    fetch_info = gitExtras.updateRepository(repo, True)
 
     gitignore = path.join(getcwd(), ".gitignore")
     return_list = gitExtras.addToFile(gitignore, ["penv/", "code/"])
@@ -54,7 +55,7 @@ def main():
     # Instantiate repository
     repo_dir = path.join(getcwd(), "code")
     repo = gitExtras.getExistingRepository(repo_dir, username, code_repo)
-    gitExtras.updateRepository(repo)
+    gitExtras.updateRepository(repo, reset)
 
     gitignore = path.join(repo_dir, ".gitignore")
     return_list = gitExtras.addToFile(gitignore, ["penv/"])

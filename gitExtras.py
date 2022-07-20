@@ -24,10 +24,10 @@ def getExistingRepository(repo_dir: path, username: str, repo_name: str) -> Repo
     return repo
 
 
-def updateRepository(repo: Repo) -> remote.FetchInfo:
+def updateRepository(repo: Repo, reset: bool) -> remote.FetchInfo:
     origin = repo.remote(name="origin")
     try:
-        repo.git.reset('--hard')
+        if reset: repo.git.reset('--hard')
         fetch_info = origin.pull()
         
     except GitCommandError as error:

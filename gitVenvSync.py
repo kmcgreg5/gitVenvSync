@@ -20,8 +20,8 @@ class projectLogger:
 def main():
     # Ensure command line argument complience
     
-    if len(argv) > 5 or (len(argv) == 4 and argv[1] not in ['--force', '--clean', '--reset']) or (len(argv) == 5 and (argv[1] not in ['--force', '--clean'] or argv[2] not in ['--reset'])):
-        projectLogger.log(projectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py (--force|--clean) (--reset) username repo-name"])
+    if len(argv) > 5 or (len(argv) == 4 and argv[1] not in ['--force', '--clean', '--noreset']) or (len(argv) == 5 and (argv[1] not in ['--force', '--clean'] or argv[2] not in ['--noreset'])):
+        projectLogger.log(projectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py [--force|--clean] [--noreset] username repo-name"])
         return
     
     enclosing_repo = argv[0].replace(".py", "")
@@ -30,7 +30,7 @@ def main():
 
     force = "--force" in argv
     clean = "--clean" in argv
-    reset = "--reset" in argv
+    reset = "--noreset" not in argv
 
     # Create or get and update the maintanence venv and throw an exception if a venv is not being used
     venvExtras.createVirtualEnvironment(getcwd(), False, False)

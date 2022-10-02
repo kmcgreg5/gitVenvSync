@@ -13,12 +13,13 @@ python gitVenvSync.py
 ---
 
 ```
-python gitVenvSync.py [--force|--clean] [--noreset] github-username repo-name
+python gitVenvSync.py [--force|--clean|--disable-env] [--noreset] github-username repo-name
 ```
 
 The ```--force``` and ```--clean``` option both create a fresh python virtual environment for the code repository.<br/>
 The ```---force``` option then updates solely from a requirements.txt file in the code repository. <br/>
 The ```---clean``` option instead merges the requirements.txt file from the repository and a pipreqs scan of the code repository, as is the normal procedure.<br/>
+The ```--disable-env``` option disables the python virtual environment creation for the code repository.<br/>
 The ```---noreset``` option disables the hard reset to the code repository before updating
 ### Bash script example
 ---

@@ -52,9 +52,10 @@ def wasRepoUpdated(fetch_info: remote.FetchInfo) -> bool:
 
 
 def addToFile(filename: path, input: list) -> list:
-    with open(filename, "x") as file:
-        pass
-        
+    if filename.exists() is False:
+        with open(filename, "x") as file:
+            pass
+
     with open(filename, "r") as file:
         file_content = file.read().strip()
     

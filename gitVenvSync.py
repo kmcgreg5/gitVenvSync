@@ -20,8 +20,8 @@ class projectLogger:
 def main():
     # Ensure command line argument complience
     
-    if len(argv) > 5 or (len(argv) == 4 and argv[1] not in ['--force', '--clean', '--noreset']) or (len(argv) == 5 and (argv[1] not in ['--force', '--clean'] or argv[2] not in ['--noreset'])):
-        projectLogger.log(projectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py [--force|--clean] [--noreset] username repo-name"])
+    if len(argv) > 5 or (len(argv) == 4 and argv[1] not in ['--force', '--clean', '--noreset', '--disable-env']) or (len(argv) == 5 and (argv[1] not in ['--force', '--clean', '--disable-env'] or argv[2] not in ['--noreset'])):
+        projectLogger.log(projectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py [--force|--clean|--disable-env] [--noreset] username repo-name"])
         return
     
     enclosing_repo = argv[0].replace(".py", "")
@@ -30,6 +30,7 @@ def main():
 
     force = "--force" in argv
     clean = "--clean" in argv
+    disable_env = "--disable-env" in argv
     reset = "--noreset" not in argv
 
     # Create or get and update the maintanence venv and throw an exception if a venv is not being used
@@ -64,8 +65,11 @@ def main():
         repo.index.add([".gitignore"])
 
     # Instantiate and update python venv
-    venvExtras.createVirtualEnvironment(repo_dir, force, clean)
-    venvExtras.updateVirtualEnvironment(repo_dir, force)
+    if disable_env is False:
+        venvExtras.createVirtualEnvironment(repo_dir, force, clean)
+        venvExtras.updateVirtualEnvironment(repo_dir, force)
+    else:
+        projectLogger.log(projectLogger.prefix.INFO, ["Code virtual environment creation is disabled, skipping..."])
     
 
 if __name__ == "__main__":

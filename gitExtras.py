@@ -51,7 +51,7 @@ def wasRepoUpdated(fetch_info: remote.FetchInfo) -> bool:
     return True
 
 
-def addToFile(filename: string, input: list) -> list:
+def addToFile(filename: str, input: list) -> list:
     if path.exists(filename) is False:
         with open(filename, "x") as file:
             pass

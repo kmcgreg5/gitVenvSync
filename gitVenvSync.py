@@ -58,11 +58,12 @@ def main():
     repo = gitExtras.getExistingRepository(repo_dir, username, code_repo)
     gitExtras.updateRepository(repo, reset)
 
-    gitignore = path.join(repo_dir, ".gitignore")
-    return_list = gitExtras.addToFile(gitignore, ["penv/"])
-    if len(return_list) > 0:
-        projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Added the following items to the git ignore:", f"\t{return_list}"])
-        repo.index.add([".gitignore"])
+    if disable_env is False:
+        gitignore = path.join(repo_dir, ".gitignore")
+        return_list = gitExtras.addToFile(gitignore, ["penv/"])
+        if len(return_list) > 0:
+            projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Added the following items to the git ignore:", f"\t{return_list}"])
+            repo.index.add([".gitignore"])
 
     # Instantiate and update python venv
     if disable_env is False:

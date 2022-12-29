@@ -43,8 +43,11 @@ def updateVirtualEnvironment(repo_dir: path, force: bool):
         system(f"{pip} install --quiet pipreqs")
         print()
 
-    with open(f"{repo_dir}/requirements.txt", 'r') as requirements:
-        current_requirements = requirements.readlines()
+    try:
+        with open(f"{repo_dir}/requirements.txt", 'r') as requirements:
+            current_requirements = requirements.readlines()
+    except FileNotFoundError:
+        current_requirements = []
 
     
     projectLogger.log(projectLogger.prefix.MAINTANENCE, [f"Updating {repo_dir}/requirements.txt..."])

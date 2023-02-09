@@ -4,7 +4,7 @@ from enum import Enum
 import venvExtras
 
 
-class projectLogger:
+class ProjectLogger:
     class prefix(Enum):
         WARNING = "WARNING"
         MAINTANENCE = "MAINTANENCE"
@@ -21,7 +21,7 @@ def main():
     # Ensure command line argument complience
     
     if len(argv) > 5 or (len(argv) == 4 and argv[1] not in ['--force', '--clean', '--noreset', '--disable-env']) or (len(argv) == 5 and (argv[1] not in ['--force', '--clean', '--disable-env'] or argv[2] not in ['--noreset'])):
-        projectLogger.log(projectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py [--force|--clean|--disable-env] [--noreset] username repo-name"])
+        ProjectLogger.log(ProjectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py [--force|--clean|--disable-env] [--noreset] username repo-name"])
         return
     
     enclosing_repo = argv[0].replace(".py", "")
@@ -35,7 +35,7 @@ def main():
 
     # Create or get and update the maintanence venv and throw an exception if a venv is not being used
     venvExtras.createVirtualEnvironment(getcwd(), False, False)
-    venvExtras.updateVirtualEnvironment(getcwd(), False)
+    venvExtras.updateVirtualEnvironment(getcwd(), username, False)
     venvExtras.VenvException.notUsingVenv()
 
     import gitExtras
@@ -47,10 +47,10 @@ def main():
     gitignore = path.join(getcwd(), ".gitignore")
     return_list = gitExtras.addToFile(gitignore, ["penv/", "code/"])
     if len(return_list) > 0:
-        projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Added the following items to the .gitignore:", f"\t{return_list}"])
+        ProjectLogger.log(ProjectLogger.prefix.MAINTANENCE, ["Added the following items to the .gitignore:", f"\t{return_list}"])
 
     if gitExtras.wasRepoUpdated(fetch_info):
-        projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Repo updated, restarting...\n"])
+        ProjectLogger.log(ProjectLogger.prefix.MAINTANENCE, ["Repo updated, restarting...\n"])
         execv(executable, ["python"] + argv)
 
     # Instantiate repository
@@ -62,15 +62,15 @@ def main():
         gitignore = path.join(repo_dir, ".gitignore")
         return_list = gitExtras.addToFile(gitignore, ["penv/"])
         if len(return_list) > 0:
-            projectLogger.log(projectLogger.prefix.MAINTANENCE, ["Added the following items to the git ignore:", f"\t{return_list}"])
+            ProjectLogger.log(ProjectLogger.prefix.MAINTANENCE, ["Added the following items to the git ignore:", f"\t{return_list}"])
             repo.index.add([".gitignore"])
 
     # Instantiate and update python venv
     if disable_env is False:
         venvExtras.createVirtualEnvironment(repo_dir, force, clean)
-        venvExtras.updateVirtualEnvironment(repo_dir, force)
+        venvExtras.updateVirtualEnvironment(repo_dir, username, force)
     else:
-        projectLogger.log(projectLogger.prefix.INFO, ["Code virtual environment creation is disabled, skipping..."])
+        ProjectLogger.log(ProjectLogger.prefix.INFO, ["Code virtual environment creation is disabled, skipping..."])
     
 
 if __name__ == "__main__":

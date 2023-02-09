@@ -1,6 +1,6 @@
 from os import path
 from git import Repo, remote
-from gitVenvSync import projectLogger
+from gitVenvSync import ProjectLogger
 from git.exc import GitCommandError
 
 
@@ -8,7 +8,7 @@ def getExistingRepository(repo_dir: path, username: str, repo_name: str) -> Repo
     git_dir = path.join(repo_dir, ".git")
     if path.isdir(git_dir):
         repo = Repo(repo_dir)
-        projectLogger.log(projectLogger.prefix.INFO, [f"Existing repository {next(repo.remote(name='origin').urls).split(':')[-1].strip('.git')} found."])
+        ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Existing repository {next(repo.remote(name='origin').urls).split(':')[-1].strip('.git')} found."])
     else:
         if (username is None or repo_name is None):
             raise ValueError("A username and repo name must be provided to instantiate repositories")
@@ -19,7 +19,7 @@ def getExistingRepository(repo_dir: path, username: str, repo_name: str) -> Repo
         repo.create_head('main', remote.refs.main)
         repo.heads.main.set_tracking_branch(remote.refs.main)
         repo.heads.main.checkout(force=True) 
-        projectLogger.log(projectLogger.prefix.INFO, [f"Repository {repo_name} created and connected."])
+        ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Repository {repo_name} created and connected."])
 
     return repo
 
@@ -44,7 +44,7 @@ def wasRepoUpdated(fetch_info: remote.FetchInfo) -> bool:
     if fetch_info is None:
         return False
         
-    projectLogger.log(projectLogger.prefix.INFO, [f"Flag: {fetch_info.flags}"])
+    ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Flag: {fetch_info.flags}"])
     if fetch_info.flags == 4:
         return False
      

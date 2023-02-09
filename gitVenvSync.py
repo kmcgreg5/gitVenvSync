@@ -35,7 +35,7 @@ def main():
 
     # Create or get and update the maintanence venv and throw an exception if a venv is not being used
     venvExtras.createVirtualEnvironment(getcwd(), False, False)
-    venvExtras.updateVirtualEnvironment(getcwd(), username, "gitVenvSync", False)
+    venvExtras.updateVirtualEnvironment(getcwd(), username, False)
     venvExtras.VenvException.notUsingVenv()
 
     import gitExtras
@@ -68,7 +68,7 @@ def main():
     # Instantiate and update python venv
     if disable_env is False:
         venvExtras.createVirtualEnvironment(repo_dir, force, clean)
-        venvExtras.updateVirtualEnvironment(repo_dir, username, code_repo, force)
+        venvExtras.updateVirtualEnvironment(repo_dir, username, force)
     else:
         ProjectLogger.log(ProjectLogger.prefix.INFO, ["Code virtual environment creation is disabled, skipping..."])
     

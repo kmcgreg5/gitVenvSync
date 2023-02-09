@@ -31,7 +31,7 @@ def createVirtualEnvironment(repo_dir: path, force: bool, clean: bool):
         EnvBuilder(with_pip=True).create(penv)
 
 
-def updateVirtualEnvironment(repo_dir: path, username: str, repo_name: str, force: bool):
+def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
     pipreqs = path.join(repo_dir, "penv/bin/pipreqs")
     pip = path.join(repo_dir, "penv/bin/pip")
 
@@ -69,7 +69,7 @@ def updateVirtualEnvironment(repo_dir: path, username: str, repo_name: str, forc
         import gitExtras
         for requirement in local_requirements:
             with TemporaryDirectory() as temp_dir:
-                temp_repo: str = f"{temp_dir}/{repo_name}"
+                temp_repo: str = f"{temp_dir}/{requirement['name']}"
                 gitExtras.getExistingRepository(temp_repo, username, requirement["name"])
 
                 temp_old_reqs = read_requirements(f"{temp_repo}/requirements.txt")

@@ -122,7 +122,7 @@ def parse_requirements(old_requirements: list[str], new_requirements:list[str]) 
             name: str = line.split("==")[1]
             version: str = line.split("==")[2]
             local_requirements.append({"name":name, "version":version, "line":line})
-        elif package not in new_requirements and package[0] != "#": # Identify additional requirements
+        elif package not in new_packages and package[0] != "#": # Identify additional requirements
             added_requirements.append(f"{line}\n")
     
     return local_requirements, added_requirements

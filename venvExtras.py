@@ -90,7 +90,7 @@ def updateVirtualEnvironment(repo_dir: path, username: str, repo_name: str, forc
 
                 rename(f"{temp_repo}/pyproject.toml", f"{temp_dir}/pyproject.toml")
 
-                system(f"{pip} install -q {temp_repo}")
+                system(f"{pip} install -q {temp_dir}")
                 with open(f"{repo_dir}/requirements.txt", 'a') as requirements:
                     requirements.write(f"{requirement['line']}\n")
 

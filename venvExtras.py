@@ -1,4 +1,4 @@
-from os import path, system
+from os import path, system, rename
 from venv import EnvBuilder
 from sys import base_prefix, prefix
 from gitVenvSync import ProjectLogger
@@ -31,7 +31,7 @@ def createVirtualEnvironment(repo_dir: path, force: bool, clean: bool):
         EnvBuilder(with_pip=True).create(penv)
 
 
-def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
+def updateVirtualEnvironment(repo_dir: path, username: str, repo_name: str, force: bool):
     pipreqs = path.join(repo_dir, "penv/bin/pipreqs")
     pip = path.join(repo_dir, "penv/bin/pip")
 
@@ -68,7 +68,8 @@ def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
         # Import here to avoid dependency clashes when creating a new virtual environment
         import gitExtras
         for requirement in local_requirements:
-            with TemporaryDirectory() as temp_repo:
+            with TemporaryDirectory() as temp_dir:
+                temp_repo: str = f"{temp_dir}/{repo_name}"
                 gitExtras.getExistingRepository(temp_repo, username, requirement["name"])
 
                 temp_old_reqs = read_requirements(f"{temp_repo}/requirements.txt")
@@ -79,7 +80,7 @@ def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
 
                 temp_new_reqs = read_requirements(f"{temp_repo}/requirements.txt")
                 temp_local_reqs, temp_added_reqs = parse_requirements(temp_old_reqs, temp_new_reqs)
-                with open(f"{temp_repo}/generated-requirements.txt", "w") as requirements:
+                with open(f"{temp_dir}/generated-requirements.txt", "w") as requirements:
                     for temp_req in temp_new_reqs:
                         requirements.write(temp_req)
                     for temp_req in temp_added_reqs:
@@ -87,6 +88,7 @@ def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
                     for temp_req in temp_local_reqs:
                         requirements.write(f"{temp_req['name']}=={temp_req['version']}\n")
 
+                rename(f"{temp_repo}/pyproject.toml", f"{temp_dir}/pyproject.toml")
 
                 system(f"{pip} install -q {temp_repo}")
                 with open(f"{repo_dir}/requirements.txt", 'a') as requirements:

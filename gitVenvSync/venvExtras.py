@@ -1,8 +1,8 @@
-from os import path, system, rename
-from venv import EnvBuilder
+import os
 import sys
+import shutil
+from venv import EnvBuilder
 from .projectLogger import ProjectLogger
-from shutil import rmtree
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -18,7 +18,7 @@ class VenvException(Exception):
             raise VenvException()
 
 
-def createVirtualEnvironment(repo_dir: path, force: bool, clean: bool):
+def createVirtualEnvironment(repo_dir: os.path, force: bool, clean: bool):
     penv = Path(repo_dir) / "penv"
 
     if (force is True or clean is True) and penv.is_dir():
@@ -27,28 +27,28 @@ def createVirtualEnvironment(repo_dir: path, force: bool, clean: bool):
             if file.is_file():
                 file.unlink()
         
-        rmtree(penv)
+        shutil.rmtree(penv)
         
     if penv.is_dir() is False:
         EnvBuilder(with_pip=True).create(penv)
 
 
-def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
-    pipreqs = path.join(repo_dir, "penv/bin/pipreqs")
-    pip = path.join(repo_dir, "penv/bin/pip")
+def updateVirtualEnvironment(repo_dir: os.path, username: str, force: bool):
+    pipreqs = os.path.join(repo_dir, "penv/bin/pipreqs")
+    pip = os.path.join(repo_dir, "penv/bin/pip")
 
     ProjectLogger.log(ProjectLogger.prefix.MAINTANENCE, ["Updating pip."])
-    system(f"{pip} install --upgrade --quiet pip")
+    os.system(f"{pip} install --upgrade --quiet pip")
 
-    if path.isfile(pipreqs) is False:
+    if os.path.isfile(pipreqs) is False:
         ProjectLogger.log(ProjectLogger.prefix.MAINTANENCE, ["Installing pipreqs."])
-        system(f"{pip} install --quiet pipreqs")
+        os.system(f"{pip} install --quiet pipreqs")
         print()
 
     old_requirements = read_requirements(f"{repo_dir}/requirements.txt")
 
     ProjectLogger.log(ProjectLogger.prefix.MAINTANENCE, [f"Updating {repo_dir}/requirements.txt..."])
-    system(f"{pipreqs} --ignore code,penv --force {repo_dir}")
+    os.system(f"{pipreqs} --ignore code,penv --force {repo_dir}")
     print()
 
     # Read new requirements
@@ -62,7 +62,7 @@ def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
                 requirements.write(requirement)
 
     ProjectLogger.log(ProjectLogger.prefix.MAINTANENCE, [f"Updating {repo_dir} virtual environment."])
-    system(f"{pip} install -q -r {repo_dir}/requirements.txt")
+    os.system(f"{pip} install -q -r {repo_dir}/requirements.txt")
     print()
 
     if len(local_requirements) != 0:
@@ -73,14 +73,14 @@ def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
             with TemporaryDirectory() as temp_dir:
                 temp_repo: str = f"{temp_dir}/{requirement['name']}"
                 temp_dir_path = str(temp_dir) # copy to avoid overwriting the variable
-                if path.exists(f"{temp_repo}/main.py"):
+                if os.path.exists(f"{temp_repo}/main.py"):
                     temp_dir_path = temp_repo
                 getExistingRepository(temp_repo, username, requirement["name"], requirement["branch"])
 
                 temp_old_reqs = read_requirements(f"{temp_repo}/requirements.txt")
 
                 ProjectLogger.log(ProjectLogger.prefix.MAINTANENCE, [f"Updating {temp_repo}/requirements.txt..."])
-                system(f"{pipreqs} --ignore code,penv --force {temp_repo}")
+                os.system(f"{pipreqs} --ignore code,penv --force {temp_repo}")
                 print()
 
                 temp_new_reqs = read_requirements(f"{temp_repo}/requirements.txt")
@@ -97,16 +97,16 @@ def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
                     version.write(f"{requirement['branch']}\n")
 
                 if temp_repo != temp_dir_path:
-                    rename(f"{temp_repo}/pyproject.toml", f"{temp_dir_path}/pyproject.toml")
-                    rename(f"{temp_repo}/README.md", f"{temp_dir_path}/README.md")
+                    os.rename(f"{temp_repo}/pyproject.toml", f"{temp_dir_path}/pyproject.toml")
+                    os.rename(f"{temp_repo}/README.md", f"{temp_dir_path}/README.md")
 
-                system(f"{pip} install -q {temp_dir_path}")
+                os.system(f"{pip} install -q {temp_dir_path}")
                 with open(f"{repo_dir}/requirements.txt", 'a') as requirements:
                     requirements.write(f"{requirement['line']}\n")
 
 
 def read_requirements(requirements_file: str) -> list[str]:
-    if path.exists(requirements_file):
+    if os.path.exists(requirements_file):
         with open(requirements_file, 'r') as requirements:
             return requirements.readlines()
     

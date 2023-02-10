@@ -1,13 +1,6 @@
 from __future__ import annotations
 from os import path
 from .projectLogger import ProjectLogger
-
-def lazyImport(func):
-    def wrapper(*args, **kwargs):
-        from git import Repo, remote, Head
-        from git.exc import GitCommandError
-        return func(*args, **kwargs)
-    return wrapper
     
 
 def getExistingRepository(repo_dir: path, username: str, repo_name: str, branch: str="main") -> Repo:
@@ -15,8 +8,8 @@ def getExistingRepository(repo_dir: path, username: str, repo_name: str, branch:
 
     git_dir = path.join(repo_dir, ".git")
     if path.isdir(git_dir):
-        ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Existing repository {next(repo.remote(name='origin').urls).split(':')[-1].strip('.git')} found."])
         repo = Repo(repo_dir)
+        ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Existing repository {next(repo.remote(name='origin').urls).split(':')[-1].strip('.git')} found."])
 
         current_branch = repo.active_branch.name
         if current_branch != branch:

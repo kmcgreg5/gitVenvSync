@@ -1,13 +1,13 @@
 from __future__ import annotations
-from os import path
+import os
 from .projectLogger import ProjectLogger
     
 
-def getExistingRepository(repo_dir: path, username: str, repo_name: str, branch: str="main") -> Repo:
+def getExistingRepository(repo_dir: os.path, username: str, repo_name: str, branch: str="main") -> Repo:
     from git import Repo, Head
 
-    git_dir = path.join(repo_dir, ".git")
-    if path.isdir(git_dir):
+    git_dir = os.path.join(repo_dir, ".git")
+    if os.path.isdir(git_dir):
         repo = Repo(repo_dir)
         ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Existing repository {next(repo.remote(name='origin').urls).split(':')[-1].strip('.git')} found."])
 
@@ -68,7 +68,7 @@ def wasRepoUpdated(fetch_info: remote.FetchInfo) -> bool:
 
 
 def addToFile(filename: str, input: list) -> list:
-    if path.exists(filename) is False:
+    if os.path.exists(filename) is False:
         with open(filename, "x") as file:
             pass
 

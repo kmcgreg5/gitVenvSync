@@ -2,11 +2,11 @@ import os
 import sys
 from argparse import ArgumentParser
 from pathlib import Path
-from .projectLogger import ProjectLogger
+from gitVenvSync.projectLogger import ProjectLogger
 import venvExtras
 
     
-def main(args: list[str]=sys.argv):
+def main(args: list=sys.argv):
     # Ensure command line argument complience
     parser = ArgumentParser(prog="git-venv-sync")
     parser.add_argument("username", help="The GitHub username.")
@@ -35,7 +35,7 @@ def main(args: list[str]=sys.argv):
     venvExtras.updateVirtualEnvironment(os.getcwd(), "kmcgreg5", False)
     venvExtras.VenvException.notUsingVenv()
 
-    import gitExtras
+    from gitVenvSync import gitExtras
 
     # Update the maintanence repo and restart if repo was updated
     maintanence_dir = Path(__file__).resolve().parent

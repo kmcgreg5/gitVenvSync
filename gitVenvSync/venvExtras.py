@@ -66,10 +66,13 @@ def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
     if len(local_requirements) != 0:
         ProjectLogger.log(ProjectLogger.prefix.MAINTANENCE, [f"Installing {repo_dir} local dependencies."])
         # Import here to avoid dependency clashes when creating a new virtual environment
-        from gitExtras import getExistingRepository
+        from .gitExtras import getExistingRepository
         for requirement in local_requirements:
             with TemporaryDirectory() as temp_dir:
                 temp_repo: str = f"{temp_dir}/{requirement['name']}"
+                temp_dir_path = str(temp_dir) # copy to avoid overwriting the variable
+                if path.exists(f"{temp_repo}/main.py"):
+                    temp_dir_path = temp_repo
                 getExistingRepository(temp_repo, username, requirement["name"], requirement["branch"])
 
                 temp_old_reqs = read_requirements(f"{temp_repo}/requirements.txt")
@@ -80,7 +83,7 @@ def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
 
                 temp_new_reqs = read_requirements(f"{temp_repo}/requirements.txt")
                 temp_local_reqs, temp_added_reqs = parse_requirements(temp_old_reqs, temp_new_reqs)
-                with open(f"{temp_dir}/generated-requirements.txt", "w") as requirements:
+                with open(f"{temp_dir_path}/generated-requirements.txt", "w") as requirements:
                     for temp_req in temp_new_reqs:
                         requirements.write(temp_req)
                     for temp_req in temp_added_reqs:
@@ -88,13 +91,14 @@ def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
                     for temp_req in temp_local_reqs:
                         requirements.write(f"{temp_req['name']}=={temp_req['branch']}\n")
                 
-                with open(f"{temp_dir}/version.txt", "w") as version:
+                with open(f"{temp_dir_path}/version.txt", "w") as version:
                     version.write(f"{requirement['branch']}\n")
 
-                rename(f"{temp_repo}/pyproject.toml", f"{temp_dir}/pyproject.toml")
-                rename(f"{temp_repo}/README.md", f"{temp_dir}/README.md")
+                if temp_repo != temp_dir_path:
+                    rename(f"{temp_repo}/pyproject.toml", f"{temp_dir_path}/pyproject.toml")
+                    rename(f"{temp_repo}/README.md", f"{temp_dir_path}/README.md")
 
-                system(f"{pip} install -q {temp_dir}")
+                system(f"{pip} install -q {temp_dir_path}")
                 with open(f"{repo_dir}/requirements.txt", 'a') as requirements:
                     requirements.write(f"{requirement['line']}\n")
 

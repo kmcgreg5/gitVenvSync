@@ -9,7 +9,7 @@ def getExistingRepository(repo_dir: os.path, username: str, repo_name: str, bran
     git_dir = os.path.join(repo_dir, ".git")
     if os.path.isdir(git_dir):
         repo = Repo(repo_dir)
-        ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Existing repository {next(repo.remote(name='origin').urls).split(':')[-1].strip('.git')} found."])
+        ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Existing repository {repo.git.execute('git remote show origin')} found."])
 
         current_branch = repo.active_branch.name
         if current_branch != branch:

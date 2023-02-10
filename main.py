@@ -31,14 +31,14 @@ def main(args: list=sys.argv[1:]):
     reset: bool = args.no_reset is False
 
     # Create or get and update the maintanence venv and throw an exception if a venv is not being used
-    venvExtras.createVirtualEnvironment(os.getcwd(), False, False)
-    venvExtras.updateVirtualEnvironment(os.getcwd(), "kmcgreg5", False)
+    maintanence_dir = Path(__file__).resolve().parent
+    venvExtras.createVirtualEnvironment(maintanence_dir, False, False)
+    venvExtras.updateVirtualEnvironment(maintanence_dir, "kmcgreg5", False)
     venvExtras.VenvException.notUsingVenv()
 
     from gitVenvSync import gitExtras
 
     # Update the maintanence repo and restart if repo was updated
-    maintanence_dir = Path(__file__).resolve().parent
     repo = gitExtras.getExistingRepository(maintanence_dir, "kmcgreg5", "gitVenvSync")
     fetch_info = gitExtras.updateRepository(repo, True)
 
@@ -52,7 +52,7 @@ def main(args: list=sys.argv[1:]):
         os.execv(sys.executable, ["python"] + sys.argv)
 
     # Instantiate repository
-    repo_dir = os.path.join(os.getcwd(), "code")
+    repo_dir = os.path.join(os.getcwd(), "code") if os.getcwd() == maintanence_dir else os.getcwd()
     repo = gitExtras.getExistingRepository(repo_dir, username, code_repo, branch)
     gitExtras.updateRepository(repo, reset)
 

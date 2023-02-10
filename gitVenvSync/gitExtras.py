@@ -6,13 +6,13 @@ def lazyImport(func):
     def wrapper(*args, **kwargs):
         from git import Repo, remote, Head
         from git.exc import GitCommandError
-        func(*args, **kwargs)
+        return func(*args, **kwargs)
     return wrapper
     
 
-
-@lazyImport
 def getExistingRepository(repo_dir: path, username: str, repo_name: str, branch: str="main") -> Repo:
+    from git import Repo, Head
+
     git_dir = path.join(repo_dir, ".git")
     if path.isdir(git_dir):
         ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Existing repository {next(repo.remote(name='origin').urls).split(':')[-1].strip('.git')} found."])
@@ -43,8 +43,11 @@ def getExistingRepository(repo_dir: path, username: str, repo_name: str, branch:
 
     return repo
 
-@lazyImport
+
 def updateRepository(repo: Repo, reset: bool) -> remote.FetchInfo:
+    #from git import Repo, remote, Head
+    from git.exc import GitCommandError
+
     origin = repo.remote(name="origin")
     try:
         if reset: repo.git.reset('--hard')
@@ -59,7 +62,7 @@ def updateRepository(repo: Repo, reset: bool) -> remote.FetchInfo:
     else:
         return None
 
-@lazyImport
+
 def wasRepoUpdated(fetch_info: remote.FetchInfo) -> bool:
     if fetch_info is None:
         return False
@@ -70,7 +73,7 @@ def wasRepoUpdated(fetch_info: remote.FetchInfo) -> bool:
      
     return True
 
-@lazyImport
+
 def addToFile(filename: str, input: list) -> list:
     if path.exists(filename) is False:
         with open(filename, "x") as file:
@@ -90,6 +93,6 @@ def addToFile(filename: str, input: list) -> list:
         
     return cleaned_input
 
-@lazyImport
+
 def getGitSSHUrl(username: str, repo_name: str) -> str:
     return f"git@github.com:{username}/{repo_name}.git"

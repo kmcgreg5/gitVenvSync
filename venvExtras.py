@@ -66,11 +66,11 @@ def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
     if len(local_requirements) != 0:
         ProjectLogger.log(ProjectLogger.prefix.MAINTANENCE, [f"Installing {repo_dir} local dependencies."])
         # Import here to avoid dependency clashes when creating a new virtual environment
-        import gitExtras
+        from gitExtras import getExistingRepository
         for requirement in local_requirements:
             with TemporaryDirectory() as temp_dir:
                 temp_repo: str = f"{temp_dir}/{requirement['name']}"
-                gitExtras.getExistingRepository(temp_repo, username, requirement["name"])
+                getExistingRepository(temp_repo, username, requirement["name"], requirement["branch"])
 
                 temp_old_reqs = read_requirements(f"{temp_repo}/requirements.txt")
 

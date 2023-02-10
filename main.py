@@ -3,7 +3,7 @@ import sys
 from argparse import ArgumentParser
 from pathlib import Path
 from gitVenvSync.projectLogger import ProjectLogger
-import venvExtras
+from gitVenvSync import venvExtras
 
     
 def main(args: list=sys.argv[1:]):

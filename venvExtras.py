@@ -1,7 +1,7 @@
 from os import path, system, rename
 from venv import EnvBuilder
 from sys import base_prefix, prefix
-from gitVenvSync import ProjectLogger
+from .projectLogger import ProjectLogger
 from shutil import rmtree
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -86,7 +86,10 @@ def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
                     for temp_req in temp_added_reqs:
                         requirements.write(temp_req)
                     for temp_req in temp_local_reqs:
-                        requirements.write(f"{temp_req['name']}=={temp_req['version']}\n")
+                        requirements.write(f"{temp_req['name']}=={temp_req['branch']}\n")
+                
+                with open(f"{temp_dir}/version.txt", "w") as version:
+                    version.write(f"{requirement['branch']}\n")
 
                 rename(f"{temp_repo}/pyproject.toml", f"{temp_dir}/pyproject.toml")
                 rename(f"{temp_repo}/README.md", f"{temp_dir}/README.md")
@@ -123,8 +126,8 @@ def parse_requirements(old_requirements: list[str], new_requirements:list[str]) 
         # Identify local packages
         if package == "#local":
             name: str = line.split("==")[1]
-            version: str = line.split("==")[2]
-            local_requirements.append({"name":name, "version":version, "line":line})
+            branch: str = line.split("==")[2]
+            local_requirements.append({"name":name, "branch":branch, "line":line})
         elif package not in new_packages and package[0] != "#": # Identify additional requirements
             added_requirements.append(f"{line}\n")
     

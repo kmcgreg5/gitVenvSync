@@ -1,65 +1,63 @@
-from os import getcwd, path, execv
-from sys import argv, executable, exit
-from enum import Enum
+import os
+import sys
+from argparse import ArgumentParser
+from pathlib import Path
+from .projectLogger import ProjectLogger
 import venvExtras
 
-
-class ProjectLogger:
-    class prefix(Enum):
-        WARNING = "WARNING"
-        MAINTANENCE = "MAINTANENCE"
-        ERROR = "ERROR"
-        INFO = "INFO"
     
-    @staticmethod
-    def log(used_prefix: prefix, lines: list, status = None):
-        for line in lines:
-            print(f"[{used_prefix.value}] {line}")
-
-    
-def main():
+def main(args: list[str]=sys.argv):
     # Ensure command line argument complience
-    
-    if len(argv) > 5 or (len(argv) == 4 and argv[1] not in ['--force', '--clean', '--noreset', '--disable-env']) or (len(argv) == 5 and (argv[1] not in ['--force', '--clean', '--disable-env'] or argv[2] not in ['--noreset'])):
-        ProjectLogger.log(ProjectLogger.prefix.ERROR, ["Usage: python gitVenvSync.py [--force|--clean|--disable-env] [--noreset] username repo-name"])
-        return
-    
-    enclosing_repo = argv[0].replace(".py", "")
-    code_repo = argv[-1] if len(argv) >= 3 else None
-    username = argv[-2] if len(argv) >= 3 else None
+    parser = ArgumentParser(prog="git-venv-sync")
+    parser.add_argument("username", help="The GitHub username.")
+    parser.add_argument("reponame", help="The GitHub repository name.")
+    parser.add_argument("--branch", default="main", help="The repo branch to sync.")
+    parser.add_argument("--no-reset", action="store_true", help="Disables the hard reset applied to the repo before updating.")
 
-    force = "--force" in argv
-    clean = "--clean" in argv
-    disable_env = "--disable-env" in argv
-    reset = "--noreset" not in argv
+    venv_options = parser.add_mutually_exclusive_group()
+    venv_options.add_argument("--force", action="store_true", help="Recreates the repos virtual environment from only the generated and local requirements.")
+    venv_options.add_argument("--clean", action="store_true", help="Recreates the repos virtual environment.")
+    venv_options.add_argument("--disable-env", action="store_true", help="Disables the repos virtual environment.")
+
+    args = parser.parse_args(args)
+    
+    code_repo: str = args.reponame
+    username: str = args.username
+    branch: str = args.branch
+
+    force: bool = args.force
+    clean: bool = args.clean
+    disable_env: bool = args.disable_env
+    reset: bool = args.no_reset is False
 
     # Create or get and update the maintanence venv and throw an exception if a venv is not being used
-    venvExtras.createVirtualEnvironment(getcwd(), False, False)
-    venvExtras.updateVirtualEnvironment(getcwd(), username, False)
+    venvExtras.createVirtualEnvironment(os.getcwd(), False, False)
+    venvExtras.updateVirtualEnvironment(os.getcwd(), "kmcgreg5", False)
     venvExtras.VenvException.notUsingVenv()
 
     import gitExtras
 
     # Update the maintanence repo and restart if repo was updated
-    repo = gitExtras.getExistingRepository(getcwd(), username, enclosing_repo)
+    maintanence_dir = Path(__file__).resolve().parent
+    repo = gitExtras.getExistingRepository(maintanence_dir, "kmcgreg5", "gitVenvSync")
     fetch_info = gitExtras.updateRepository(repo, True)
 
-    gitignore = path.join(getcwd(), ".gitignore")
+    gitignore = os.path.join(maintanence_dir, ".gitignore")
     return_list = gitExtras.addToFile(gitignore, ["penv/", "code/"])
     if len(return_list) > 0:
         ProjectLogger.log(ProjectLogger.prefix.MAINTANENCE, ["Added the following items to the .gitignore:", f"\t{return_list}"])
 
     if gitExtras.wasRepoUpdated(fetch_info):
         ProjectLogger.log(ProjectLogger.prefix.MAINTANENCE, ["Repo updated, restarting...\n"])
-        execv(executable, ["python"] + argv)
+        os.execv(sys.executable, ["python"] + sys.argv)
 
     # Instantiate repository
-    repo_dir = path.join(getcwd(), "code")
-    repo = gitExtras.getExistingRepository(repo_dir, username, code_repo)
+    repo_dir = os.path.join(os.getcwd(), "code")
+    repo = gitExtras.getExistingRepository(repo_dir, username, code_repo, branch)
     gitExtras.updateRepository(repo, reset)
 
     if disable_env is False:
-        gitignore = path.join(repo_dir, ".gitignore")
+        gitignore = os.path.join(repo_dir, ".gitignore")
         return_list = gitExtras.addToFile(gitignore, ["penv/"])
         if len(return_list) > 0:
             ProjectLogger.log(ProjectLogger.prefix.MAINTANENCE, ["Added the following items to the git ignore:", f"\t{return_list}"])

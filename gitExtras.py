@@ -1,14 +1,24 @@
 from os import path
-from git import Repo, remote
-from gitVenvSync import ProjectLogger
+from git import Repo, remote, Head
+from .projectLogger import ProjectLogger
 from git.exc import GitCommandError
 
 
-def getExistingRepository(repo_dir: path, username: str, repo_name: str) -> Repo:
+def getExistingRepository(repo_dir: path, username: str, repo_name: str, branch: str="main") -> Repo:
     git_dir = path.join(repo_dir, ".git")
     if path.isdir(git_dir):
-        repo = Repo(repo_dir)
         ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Existing repository {next(repo.remote(name='origin').urls).split(':')[-1].strip('.git')} found."])
+        repo = Repo(repo_dir)
+
+        current_branch = repo.active_branch.name
+        if current_branch != branch:
+            ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Switching from branch {current_branch} to branch {branch}."])
+            repo.git.reset('--hard')
+            branch_reference = getattr(repo.remotes.origin.refs, branch)
+            head: Head = repo.create_head(branch, branch_reference)
+            head.set_tracking_branch(branch_reference)
+            head.checkout(force=True) 
+        
     else:
         if (username is None or repo_name is None):
             raise ValueError("A username and repo name must be provided to instantiate repositories")
@@ -16,10 +26,12 @@ def getExistingRepository(repo_dir: path, username: str, repo_name: str) -> Repo
         repo = Repo.init(repo_dir)
         remote = repo.create_remote("origin", getGitSSHUrl(username, repo_name))
         remote.fetch()
-        repo.create_head('main', remote.refs.main)
-        repo.heads.main.set_tracking_branch(remote.refs.main)
-        repo.heads.main.checkout(force=True) 
-        ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Repository {repo_name} created and connected."])
+
+        branch_reference = getattr(remote.refs, branch)
+        head: Head = repo.create_head(branch, branch_reference)
+        head.set_tracking_branch(branch_reference)
+        head.checkout(force=True) 
+        ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Repository {repo_name} created and connected on branch {branch}."])
 
     return repo
 

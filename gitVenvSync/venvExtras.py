@@ -1,6 +1,6 @@
 from os import path, system, rename
 from venv import EnvBuilder
-from sys import base_prefix, prefix
+import sys
 from .projectLogger import ProjectLogger
 from shutil import rmtree
 from pathlib import Path

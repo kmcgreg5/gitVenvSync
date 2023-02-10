@@ -1,8 +1,10 @@
+from __future__ import annotations
+from os import path
+from .projectLogger import ProjectLogger
+
 def lazyImport(func):
     def wrapper(*args, **kwargs):
-        from os import path
         from git import Repo, remote, Head
-        from .projectLogger import ProjectLogger
         from git.exc import GitCommandError
         func(*args, **kwargs)
     return wrapper

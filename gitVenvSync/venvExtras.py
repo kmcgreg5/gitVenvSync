@@ -1,14 +1,10 @@
-def lazyImport(func):
-    def wrapper(*args, **kwargs):
-        from os import path, system, rename
-        from venv import EnvBuilder
-        from sys import base_prefix, prefix
-        from .projectLogger import ProjectLogger
-        from shutil import rmtree
-        from pathlib import Path
-        from tempfile import TemporaryDirectory
-        func(*args, **kwargs)
-    return wrapper
+from os import path, system, rename
+from venv import EnvBuilder
+from sys import base_prefix, prefix
+from .projectLogger import ProjectLogger
+from shutil import rmtree
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 class VenvException(Exception):
     def __init__(self, message = "A virtual environment should be used to run this program."):
@@ -16,10 +12,12 @@ class VenvException(Exception):
 
     @staticmethod
     def notUsingVenv():
-        if (base_prefix == prefix):
+        def is_venv() -> bool:
+            return (hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix))
+        if is_venv() is False:
             raise VenvException()
 
-@lazyImport
+
 def createVirtualEnvironment(repo_dir: path, force: bool, clean: bool):
     penv = Path(repo_dir) / "penv"
 
@@ -34,7 +32,7 @@ def createVirtualEnvironment(repo_dir: path, force: bool, clean: bool):
     if penv.is_dir() is False:
         EnvBuilder(with_pip=True).create(penv)
 
-@lazyImport
+
 def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
     pipreqs = path.join(repo_dir, "penv/bin/pipreqs")
     pip = path.join(repo_dir, "penv/bin/pip")
@@ -106,7 +104,7 @@ def updateVirtualEnvironment(repo_dir: path, username: str, force: bool):
                 with open(f"{repo_dir}/requirements.txt", 'a') as requirements:
                     requirements.write(f"{requirement['line']}\n")
 
-@lazyImport
+
 def read_requirements(requirements_file: str) -> list[str]:
     if path.exists(requirements_file):
         with open(requirements_file, 'r') as requirements:
@@ -114,7 +112,7 @@ def read_requirements(requirements_file: str) -> list[str]:
     
     return []
 
-@lazyImport
+
 def parse_requirements(old_requirements: list[str], new_requirements:list[str]) -> tuple[list[dict], list[str]]:
     def get_package(line: str) -> str:
         return line.split('=')[0].replace('!', '').replace('>', '').replace('<', '').replace('~', '').strip()

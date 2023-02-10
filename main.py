@@ -6,7 +6,7 @@ from gitVenvSync.projectLogger import ProjectLogger
 import venvExtras
 
     
-def main(args: list=sys.argv):
+def main(args: list=sys.argv[1:]):
     # Ensure command line argument complience
     parser = ArgumentParser(prog="git-venv-sync")
     parser.add_argument("username", help="The GitHub username.")

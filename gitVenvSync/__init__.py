@@ -1,1 +1,1 @@
-from . import gitVenvSync, venvExtras, gitExtras, projectLogger
+from . import venvExtras, gitExtras, projectLogger

@@ -6,5 +6,5 @@ script_dir=$(pwd)
 fi
 
 source "$script_dir/penv/bin/activate"
-python "$script_dir/main.py "$@"
+python "$script_dir/main.py" "$@"
 deactivate

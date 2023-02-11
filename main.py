@@ -15,6 +15,7 @@ def main(args: list=sys.argv[1:]):
     parser.add_argument("--branch", default="main", help="The repo branch to sync.")
     parser.add_argument("--no-reset", action="store_true", help="Disables the hard reset applied to the repo before updating.")
     parser.add_argument("--script-template", default=None, help="A path to a script file to use as a template.")
+    parser.add_argument("--script-extension", default=".py", help="The extension of the executed script in the script template.")
 
     venv_options = parser.add_mutually_exclusive_group()
     venv_options.add_argument("--force", action="store_true", help="Recreates the repos virtual environment from only the generated and local requirements.")
@@ -32,6 +33,7 @@ def main(args: list=sys.argv[1:]):
     disable_env: bool = args.disable_env
     reset: bool = args.no_reset is False
     script_template: Optional[str] = args.script_template
+    script_extension: str = args.script_extension
 
     # Create or get and update the maintanence venv and throw an exception if a venv is not being used
     maintanence_dir = Path(__file__).resolve().parent
@@ -57,7 +59,11 @@ def main(args: list=sys.argv[1:]):
     # Instantiate repository
     repo_dir = os.path.join(os.getcwd(), "code") if os.getcwd() == maintanence_dir else os.getcwd()
     repo = gitExtras.getExistingRepository(repo_dir, username, code_repo, branch)
-    gitExtras.updateRepository(repo, reset, __default_script_text(script_template))
+    gitExtras.updateRepository(repo, reset, __default_script_text(disable_env, script_template, script_extension), script_extension)
+
+    script: Optional[str] = __default_script_text(disable_env, script_template, script_extension)
+    if script is not None:
+        gitExtras.createExecutionScript(repo, script, script_extension)
 
     if disable_env is False:
         gitignore = os.path.join(repo_dir, ".gitignore")
@@ -73,12 +79,14 @@ def main(args: list=sys.argv[1:]):
     else:
         ProjectLogger.log(ProjectLogger.prefix.INFO, ["Code virtual environment creation is disabled, skipping..."])
     
-def __default_script_text(disable_env: bool, file: str=None) -> str:
+def __default_script_text(disable_env: bool, file: str=None, extension: str=".py") -> Optional[str]:
+    
     if file is not None:
         with open(file, "r") as script_template:
             return script_template.read()
     
-    
+    if disable_env: return None
+
     return '''#!/bin/bash
 script_dir=$(dirname "$0")
 
@@ -88,9 +96,9 @@ then
 fi
 
 source "$script_dir/penv/bin/activate"
-python "$script_dir/{scriptname}" "$@"
+python "$script_dir/{scriptname}{extension}" "$@"
 deactivate
-'''
+'''.replace("{extension}", extension)
 
 if __name__ == "__main__":
     main()

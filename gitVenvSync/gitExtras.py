@@ -39,7 +39,7 @@ def getExistingRepository(repo_dir: os.path, username: str, repo_name: str, bran
     return repo
 
 
-def updateRepository(repo: Repo, reset: bool, script: str=None) -> remote.FetchInfo:
+def updateRepository(repo: Repo, reset: bool, script: str=None, script_extension: str="") -> remote.FetchInfo:
     #from git import Repo, remote, Head
     from git.exc import GitCommandError
 
@@ -51,31 +51,31 @@ def updateRepository(repo: Repo, reset: bool, script: str=None) -> remote.FetchI
     except GitCommandError as error:
         message = f"An issue has occurred with the pull request for {next(repo.remote(name='origin').urls).split(':')[-1].strip('.git')}. Please resolve this before continuing."
         raise Exception(message) from error
-    
-    if script is not None:
-        repo_name: str = repo.remotes.origin.url.split('.git')[0].split('/')[-1]
-        path: str = f"{repo.working_dir}/{repo_name}.sh"
-        if not os.path.exists(path):
-            script_name: Optional[str] = None
-            if os.path.exists(f"{repo.working_dir}/main.py"):
-                script_name = "main.py"
-            elif os.path.exists(f"{repo.working_dir}/{repo_name}.py"):
-                script_name = f"{repo_name}.py"
-            
-            if script_name is not None:
-                with open(path, "w") as script_file:
-                    script = script.replace("{scriptname}", f"{script_name}")
-                    script_file.write(script)
-                # Make executable by the user
-                os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
-                ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Shell script {path} created."])
-            else:
-                ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Shell script generation skipped, no entrypoint found."])
 
     if len(fetch_info) > 0:
         return fetch_info[0]
     else:
         return None
+
+def createExecutionScript(repo: Repo, script: str, script_extension: str=""):
+    repo_name: str = repo.remotes.origin.url.split('.git')[0].split('/')[-1]
+    path: str = f"{repo.working_dir}/{repo_name}.sh"
+    if not os.path.exists(path):
+        script_name: Optional[str] = None
+        if os.path.exists(f"{repo.working_dir}/main{script_extension}"):
+            script_name = f"main{script_extension}"
+        elif os.path.exists(f"{repo.working_dir}/{repo_name}{script_extension}"):
+            script_name = f"{repo_name}{script_extension}"
+        
+        if script_name is not None:
+            with open(path, "w") as script_file:
+                script = script.replace("{scriptname}", f"{script_name}")
+                script_file.write(script)
+            # Make executable by the user
+            os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
+            ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Shell script {path} created."])
+        else:
+            ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Shell script generation skipped, no entrypoint found."])
 
 
 def wasRepoUpdated(fetch_info: remote.FetchInfo) -> bool:

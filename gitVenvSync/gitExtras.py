@@ -63,9 +63,9 @@ def createExecutionScript(repo: Repo, script: str, script_extension: str=""):
     if not os.path.exists(path):
         script_name: Optional[str] = None
         if os.path.exists(f"{repo.working_dir}/main{script_extension}"):
-            script_name = f"main{script_extension}"
+            script_name = f"main"
         elif os.path.exists(f"{repo.working_dir}/{repo_name}{script_extension}"):
-            script_name = f"{repo_name}{script_extension}"
+            script_name = f"{repo_name}"
         
         if script_name is not None:
             with open(path, "w") as script_file:

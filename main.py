@@ -54,7 +54,7 @@ def main(args: list=sys.argv[1:]):
     # Instantiate repository
     repo_dir = os.path.join(os.getcwd(), "code") if os.getcwd() == maintanence_dir else os.getcwd()
     repo = gitExtras.getExistingRepository(repo_dir, username, code_repo, branch)
-    gitExtras.updateRepository(repo, reset)
+    gitExtras.updateRepository(repo, reset, "")
 
     if disable_env is False:
         gitignore = os.path.join(repo_dir, ".gitignore")
@@ -72,7 +72,7 @@ def main(args: list=sys.argv[1:]):
     
 def __default_script_text() -> str:
     return '''
-        
+
     '''
 
 if __name__ == "__main__":

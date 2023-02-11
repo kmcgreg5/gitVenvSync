@@ -79,7 +79,8 @@ def __default_script_text(disable_env: bool, file: str=None) -> str:
             return script_template.read()
     
     
-    return '''script_dir=$(dirname "$0")
+    return '''#!/bin/bash
+script_dir=$(dirname "$0")
 
 if [ $script_dir = '.' ]
 then

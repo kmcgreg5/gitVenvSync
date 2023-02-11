@@ -20,7 +20,7 @@ class VenvException(Exception):
 
 def createVirtualEnvironment(repo_dir: os.path, force: bool, clean: bool):
     penv = Path(repo_dir) / "penv"
-
+    
     if (force is True or clean is True) and penv.is_dir():
         ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Removing {repo_dir} python environment."])
         for file in penv.rglob("*"):

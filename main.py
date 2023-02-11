@@ -70,6 +70,10 @@ def main(args: list=sys.argv[1:]):
     else:
         ProjectLogger.log(ProjectLogger.prefix.INFO, ["Code virtual environment creation is disabled, skipping..."])
     
+def __default_script_text() -> str:
+    return '''
+        
+    '''
 
 if __name__ == "__main__":
     main()

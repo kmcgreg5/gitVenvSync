@@ -37,7 +37,7 @@ def getExistingRepository(repo_dir: os.path, username: str, repo_name: str, bran
     return repo
 
 
-def updateRepository(repo: Repo, reset: bool) -> remote.FetchInfo:
+def updateRepository(repo: Repo, reset: bool, script: str=None) -> remote.FetchInfo:
     #from git import Repo, remote, Head
     from git.exc import GitCommandError
 
@@ -50,6 +50,12 @@ def updateRepository(repo: Repo, reset: bool) -> remote.FetchInfo:
         message = f"An issue has occurred with the pull request for {next(repo.remote(name='origin').urls).split(':')[-1].strip('.git')}. Please resolve this before continuing."
         raise Exception(message) from error
     
+    if script is not None:
+        path: str = f"{repo.working_dir}/{repo.remotes.origin.url.split('.git')[0].split('/')[-1]}"
+        print(path)
+        if not os.path.exists(path):
+            print("exists")
+
     if len(fetch_info) > 0:
         return fetch_info[0]
     else:

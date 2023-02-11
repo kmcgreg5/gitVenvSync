@@ -1,6 +1,8 @@
 from __future__ import annotations
 import os
+import stat
 from .projectLogger import ProjectLogger
+from typing import Optional
     
 
 def getExistingRepository(repo_dir: os.path, username: str, repo_name: str, branch: str="main") -> Repo:
@@ -51,10 +53,23 @@ def updateRepository(repo: Repo, reset: bool, script: str=None) -> remote.FetchI
         raise Exception(message) from error
     
     if script is not None:
-        path: str = f"{repo.working_dir}/{repo.remotes.origin.url.split('.git')[0].split('/')[-1]}"
-        print(path)
+        repo_name: str = repo.remotes.origin.url.split('.git')[0].split('/')[-1]
+        path: str = f"{repo.working_dir}/{repo_name}.sh"
         if not os.path.exists(path):
-            print("exists")
+            script_name: Optional[str] = None
+            if os.path.exists(f"{repo.working_dir}/main.py"):
+                script_name = "main.py"
+            elif os.path.exists(f"{repo.working_dir}/{repo_name}.py"):
+                script_name = f"{repo_name}.py"
+            
+            if script_name is not None:
+                with open(path, "w") as script_file:
+                    script = script.replace("{scriptname}", f"{script_name}")
+                    script_file.write(script)
+                # Make executable by the user
+                os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
+            else:
+                ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Shell script generation skipped, no entrypoint found."])
 
     if len(fetch_info) > 0:
         return fetch_info[0]

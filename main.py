@@ -73,7 +73,7 @@ def main(args: list=sys.argv[1:]):
     else:
         ProjectLogger.log(ProjectLogger.prefix.INFO, ["Code virtual environment creation is disabled, skipping..."])
     
-def __default_script_text(file: str=None) -> str:
+def __default_script_text(disable_env: bool, file: str=None) -> str:
     if file is not None:
         with open(file, "r") as script_template:
             return script_template.read()

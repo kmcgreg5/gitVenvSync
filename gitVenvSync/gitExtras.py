@@ -68,6 +68,7 @@ def updateRepository(repo: Repo, reset: bool, script: str=None) -> remote.FetchI
                     script_file.write(script)
                 # Make executable by the user
                 os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
+                ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Shell script {path} created."])
             else:
                 ProjectLogger.log(ProjectLogger.prefix.INFO, [f"Shell script generation skipped, no entrypoint found."])
 

@@ -81,15 +81,15 @@ def __default_script_text(disable_env: bool, file: str=None) -> str:
     
     return '''script_dir=$(dirname "$0")
 
-    if [ $script_dir = '.' ]
-    then
-        script_dir=$(pwd)
-    fi
+if [ $script_dir = '.' ]
+then
+    script_dir=$(pwd)
+fi
 
-    source "$script_dir/penv/bin/activate"
-    python "$script_dir/{scriptname}" "$@"
-    deactivate
-    '''
+source "$script_dir/penv/bin/activate"
+python "$script_dir/{scriptname}" "$@"
+deactivate
+'''
 
 if __name__ == "__main__":
     main()

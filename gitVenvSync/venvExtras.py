@@ -73,7 +73,8 @@ def updateVirtualEnvironment(repo_dir: os.path, username: str, force: bool):
             with TemporaryDirectory() as temp_dir:
                 temp_repo: str = f"{temp_dir}/{requirement['name']}"
                 temp_dir_path = str(temp_dir) # copy to avoid overwriting the variable
-                if os.path.exists(f"{temp_repo}/main.py"):
+                # __init__.py indicates a top level package
+                if os.path.exists(f"{temp_repo}/__init__.py"):
                     temp_dir_path = temp_repo
                 getExistingRepository(temp_repo, username, requirement["name"], requirement["branch"])
 

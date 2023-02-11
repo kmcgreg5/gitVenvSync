@@ -6,5 +6,5 @@ script_dir=$(pwd)
 fi
 
 source "$script_dir/penv/bin/activate"
-python gitVenvSync.py "$@"
+python "$script_dir/main.py "$@"
 deactivate

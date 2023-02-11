@@ -93,9 +93,9 @@ def updateVirtualEnvironment(repo_dir: os.path, username: str, force: bool):
                         requirements.write(temp_req)
                     for temp_req in temp_local_reqs:
                         requirements.write(f"{temp_req['name']}=={temp_req['branch']}\n")
-                print(f'BRANCH {requirement["branch"]}')
+                
                 with open(f"{temp_dir_path}/version.txt", "w") as version:
-                    version.write(f"{requirement['branch']}-1\n")
+                    version.write(f"1.0.0-{requirement['branch']}\n")
 
                 if temp_repo != temp_dir_path:
                     os.rename(f"{temp_repo}/pyproject.toml", f"{temp_dir_path}/pyproject.toml")

@@ -118,7 +118,7 @@ def parse_requirements(old_requirements: list[str], new_requirements:list[str]) 
     new_packages = []
     for line in new_requirements:
         line = line.strip()
-        if (line) == 0: continue
+        if len(line) == 0: continue
         if line[0] == "#": continue
         new_packages.append(get_package(line))
 
